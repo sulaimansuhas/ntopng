@@ -177,14 +177,22 @@ u_int16_t Host::decScoreValue(u_int16_t score_decr,
 /* *************************************** */
 
 void Host::updateSynAlertsCounter(time_t when, bool syn_sent) {
-  AlertCounter *counter = syn_sent ? syn_flood.attacker_counter : syn_flood.victim_counter;
-
-  counter->inc(when, this);
-
   if (syn_sent)
     syn_scan.syn_sent_last_min++;
   else
     syn_scan.syn_recvd_last_min++;
+}
+
+/* *************************************** */
+
+void Host::updateSynFloodAlertsCounter(bool attacker, bool connection_opened) {
+  ntop->getTrace()->traceEvent(TRACE_NORMAL,"host victim counter:%d, host attcker counter:%d",
+                               syn_flood.victim_counter->hits(), syn_flood.attacker_counter->hits());
+  AlertCounter *counter = attacker ? syn_flood.attacker_counter : syn_flood.victim_counter;
+  if(connection_opened)
+    counter->inc_no_time_window();
+  else
+    counter->dec();
 }
 
 /* *************************************** */
