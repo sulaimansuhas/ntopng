@@ -186,8 +186,6 @@ void Host::updateSynAlertsCounter(time_t when, bool syn_sent) {
 /* *************************************** */
 
 void Host::updateSynFloodAlertsCounter(bool attacker, bool connection_opened) {
-  ntop->getTrace()->traceEvent(TRACE_NORMAL,"host victim counter:%d, host attcker counter:%d",
-                               syn_flood.victim_counter->hits(), syn_flood.attacker_counter->hits());
   AlertCounter *counter = attacker ? syn_flood.attacker_counter : syn_flood.victim_counter;
   if(connection_opened)
     counter->inc_no_time_window();

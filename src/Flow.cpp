@@ -8743,8 +8743,10 @@ bool Flow::checkS1ConnState() {
 /* **************************************************** */
 
 void Flow::updateSynFloodAlerts(bool connection_opened){
-    if(current_c_state != S0 && !connection_opened)
+    if((current_c_state != S0 && !connection_opened) || 
+    (current_c_state !=MINOR_NO_STATE && connection_opened))
       return;
+
     
     NetworkStats *cli_network_stats = NULL, *srv_network_stats = NULL;
     if (srv_host) 
@@ -8778,12 +8780,12 @@ MinorConnectionStates Flow::calculateConnectionState(bool is_cumulative) {
           updateSynFloodAlerts(false);
           return(setCurrentConnectionState(SH));
         } else {
-          /* We are assuming that the TCP connection is established on
-           * server side when it sees the clients SYN
-           * this helps us detect SYN flood victims even if all the SYN
-           * packets are rejected or dropped*/
-          updateSynFloodAlerts(true);
-          return(setCurrentConnectionState(S0));
+            /* We are assuming that the TCP connection is established on
+             * server side when it sees the clients SYN
+             * this helps us detect SYN flood victims even if all the SYN
+             * packets are rejected or dropped*/
+            updateSynFloodAlerts(true);
+            return(setCurrentConnectionState(S0));
         }
       }
     } else {
